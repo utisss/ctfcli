@@ -352,7 +352,7 @@ def lint_challenge(path):
         exit(1)
 
     # Check that the image field and Dockerfile match
-    if (Path(path).parent / "Dockerfile").is_file() and challenge.get("image") != ".":
+    if (Path(path).parent / "Dockerfile").is_file() and challenge.get("image") not in [".", None]:
         print("Dockerfile exists but image field does not point to it")
         exit(1)
 
