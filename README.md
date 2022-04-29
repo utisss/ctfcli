@@ -2,6 +2,8 @@
 
 *ctfcli is a tool to manage Capture The Flag events and challenges.*
 
+This repository contains ISSS's fork, which diverges slightly from upstream to support our workflow.
+
 `ctfcli` provides challenge specifications and templates to make it easier to generate challenges of different categories. It also provides an integration with the [CTFd](https://github.com/CTFd/CTFd/) REST API to allow for command line uploading of challenges and integration with CI/CD build systems.
 
 `ctfcli` features tab completion, a REPL interface (thanks to [Python-Fire](https://github.com/google/python-fire)) and plugin support for custom commands.
