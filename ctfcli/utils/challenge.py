@@ -14,6 +14,10 @@ class Yaml(dict):
         self.file_path = Path(file_path)
         self.directory = self.file_path.parent
 
+class LintError(Exception):
+    pass
+
+
 
 def load_challenge(path):
     try:
@@ -336,7 +340,7 @@ def lint_challenge(path):
         challenge = load_challenge(path)
     except yaml.YAMLError as e:
         click.secho(f"Error parsing challenge.yml: {e}", fg="red")
-        exit(1)
+        raise LintError()
 
     required_fields = ["name", "author", "category", "description", "value"]
     errors = []
@@ -349,12 +353,12 @@ def lint_challenge(path):
 
     if len(errors) > 0:
         print("Missing fields: ", ", ".join(errors))
-        exit(1)
+        raise LintError()
 
     # Check that the image field and Dockerfile match
     if (Path(path).parent / "Dockerfile").is_file() and challenge.get("image") not in [".", None]:
         print("Dockerfile exists but image field does not point to it")
-        exit(1)
+        raise LintError()
 
     # Check that Dockerfile exists and is EXPOSE'ing a port
     if challenge.get("image") == ".":
@@ -362,11 +366,11 @@ def lint_challenge(path):
             dockerfile = (Path(path).parent / "Dockerfile").open().read()
         except FileNotFoundError:
             print("Dockerfile specified in 'image' field but no Dockerfile found")
-            exit(1)
+            raise LintError()
 
         if "EXPOSE" not in dockerfile:
             print("Dockerfile missing EXPOSE")
-            exit(1)
+            raise LintError()
 
         # Check Dockerfile with hadolint
         proc = subprocess.run(
@@ -375,7 +379,7 @@ def lint_challenge(path):
         )
         if proc.returncode != 0:
             print("Hadolint found Dockerfile lint issues, please resolve")
-            exit(1)
+            raise LintError()
 
     # Check that all files exists
     files = challenge.get("files", [])
@@ -386,7 +390,7 @@ def lint_challenge(path):
             print(f"File {f} specified but not found at {fpath.absolute()}")
             errored = True
     if errored:
-        exit(1)
+        raise LintError()
 
     # Check that files don't have a flag in them
     files = challenge.get("files", [])
@@ -401,6 +405,4 @@ def lint_challenge(path):
                 )
                 errored = True
     if errored:
-        exit(1)
-
-    exit(0)
+        raise LintError()
