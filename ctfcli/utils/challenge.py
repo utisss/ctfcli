@@ -393,16 +393,16 @@ def lint_challenge(path):
         raise LintError()
 
     # Check that files don't have a flag in them
-    files = challenge.get("files", [])
-    errored = False
-    for f in files:
-        fpath = Path(path).parent / f
-        for s in strings(fpath):
-            # TODO make flag format customizable
-            if "flag" in s:
-                print(
-                    f"Potential flag {s} found in distributed file {fpath.absolute()}"
-                )
-                errored = True
+    #files = challenge.get("files", [])
+    #errored = False
+    #for f in files:
+    #    fpath = Path(path).parent / f
+    #    for s in strings(fpath):
+    #        # TODO make flag format customizable
+    #        if "flag" in s:
+    #            print(
+    #                f"Potential flag {s} found in distributed file {fpath.absolute()}"
+    #            )
+    #            errored = True
     if errored:
         raise LintError()
